@@ -16,11 +16,7 @@ def load_dataframe(path):
 
 
 def clean_data(dataframe):
-    # new_header = dataframe.iloc[0] #grab the first row for the header
-    # newdata = dataframe[1:] #take the data less the header row
-    # dataframe.columns = new_header #set the header row as the df header
-    # dataframe=dataframe.drop([0],axis=0)#not necessary always, depends on the dataset . In the dataset the first column contains headers.
-    print(dataframe.columns)
+    """Cleans the dataframe from all the | delimeters and removes - present in the style column. """
     dataframe=dataframe.drop(['broad_category','shallow_category_name'] , axis=1)
     df=dataframe.copy()
     df=df[df['Style']!='-']
@@ -104,11 +100,12 @@ def clean_data(dataframe):
     .loc[:, df.columns] )
 
     # df=df[df['Style']!='-']
-    print(len(df))
+    # print(len(df))
 
     return df
 
 def split(data):
+  """ Splits the dataset into train and eval set and return all the necessary parameters"""
   y=data[['Style']]
   X=data.drop(['Style'],axis=1)
   
@@ -119,6 +116,8 @@ def split(data):
 # count=0
 def one_at_time(listofstyles,key1,colno1,dataframe,min_occur_threshold,positive_freq_threshold,negative_freq_threshold):
   # dicto={'Style':[],'Attribute':[],'Key':[],'+ Prob':[],'- Prob':[],'Freq':[]}
+  """ Calculates one at a time features for the given style takes as input the thresholding values and 
+  returns the keys and col name that are possible features."""
   dataframe=dataframe[dataframe[colno1]!='-']
   indexval=len(dataframe[(dataframe[colno1]==key1)])
 
@@ -158,6 +157,8 @@ def one_at_time(listofstyles,key1,colno1,dataframe,min_occur_threshold,positive_
 
 def two_at_time(listofstyles,key1,key2,colno1,colno2,dataframe,min_occur_threshold,positive_freq_threshold,negative_freq_threshold):
   # dicto={'Style':[],'Attribute':[],'Key':[],'+ Prob':[],'- Prob':[],'Freq':[]}
+  """Calculates the crosses probability and filters the data acrrordiung to the values
+   provided by the suer and returns  a list of the efatures"""
   dataframe=dataframe[dataframe[colno1]!='-']
   dataframe=dataframe[dataframe[colno2]!='-']
   indexval=len(dataframe[(dataframe[colno1]==key1) & (dataframe[colno2]==key2)])
@@ -203,6 +204,7 @@ def two_at_time(listofstyles,key1,key2,colno1,colno2,dataframe,min_occur_thresho
 
 
 def vectorcreator(listofsingleattribute,listofcrosses,listofcrosses2,dataframe):
+  """Creates a fetaure vector for the independent features and returns a feture vector"""
   featvec=np.zeros(len(listofsingleattribute)+len(listofcrosses))
   for i in range(len(listofsingleattribute)):
     if(list(dataframe[listofsingleattribute[i][1]])[0]==listofsingleattribute[i][0]):
@@ -217,6 +219,7 @@ def vectorcreator(listofsingleattribute,listofcrosses,listofcrosses2,dataframe):
 
 
 def vectorcreatorlabel(y_train, k):
+  """Creates feature vector for labels"""
   labelvec=np.zeros(len(y_train))
   for i in range(len(y_train)):
     if(list(y_train.iloc[[i]]['Style'])[0]==k[0]):
@@ -230,6 +233,7 @@ def vectorcreatorlabel(y_train, k):
 
 
 def classifier(X,y):
+  """Simple sklearn model that has weights set to balanced and can be varied too"""
   clf = LogisticRegression(random_state=0,max_iter=700,class_weight="balanced").fit(X, y)
   return clf
 
@@ -251,6 +255,7 @@ def get_index_of_closest_variable(numbers_list, variable):
     return selected_index
 
 def compute_eval_metrics(eval_labels, predictions, recall_values = [0.6,0.65, 0.7, 0.75, 0.8, 0.85], plot_pr_curve = False):
+    """ Computes the precision at different thresholds and return a dict that contains values at diffrent thresholds"""
     output_metrics = {}
     precision, recall, thresholds = precision_recall_curve(eval_labels, predictions)
     pr_list = zip(precision, recall)
@@ -272,16 +277,17 @@ def compute_eval_metrics(eval_labels, predictions, recall_values = [0.6,0.65, 0.
         # We allow maximum 2% variance in recall. If not, better to show -1 as we can never reach this recall.
         if abs((recall[index] - r_value)) >= 0.02:
             output_metrics["precision@recall_" + str(r_value)] = -1.0
-            output_metrics["precision@recall_" + str(r_value) + "_base_diff"] = -1.0
+            # output_metrics["precision@recall_" + str(r_value) + "_base_diff"] = -1.0
         else:
             output_metrics["precision@recall_" + str(r_value)] = precision[index]
-            output_metrics["precision@recall_" + str(r_value) + "_base_diff"] = precision[index] - output_metrics['base_precision']
+            # output_metrics["precision@recall_" + str(r_value) + "_base_diff"] = precision[index] - output_metrics['base_precision']
     
     return output_metrics
 
 
 
 def checkifpossible(listofstyles,key1,colno1,dataframe,style):
+  """Chceks if the single feature has its probabilty greater than variance acroos all tbe styles"""
   dataframe=dataframe[dataframe[colno1]!='-']
   indexval=len(dataframe[(dataframe[colno1]==key1)])
   posprob=[]
@@ -303,6 +309,7 @@ def checkifpossible(listofstyles,key1,colno1,dataframe,style):
 
 
 def compute_var_double_ispossible(listofstyles,key1,key2,colno1,colno2,dataframe,style):
+  """Chceks if the crosses have the probability greater than varaince accross styles."""
   dataframe=dataframe[dataframe[colno1]!='-']
   dataframe=dataframe[dataframe[colno2]!='-']
   indexval=len(dataframe[(dataframe[colno1]==key1) & (dataframe[colno2]==key2)])
@@ -323,6 +330,7 @@ def compute_var_double_ispossible(listofstyles,key1,key2,colno1,colno2,dataframe
 
 
 def crosspossible(listofstyles,key1,key2,colno1,colno2,dataframe,min_occur_threshold,positive_freq_threshold,negative_freq_threshold):
+    """Checks if the single feature in the cross has probabilty close to 1 then do not consider its pos cross."""
     dataframe=dataframe[dataframe[colno1]!='-']
     dataframe=dataframe[dataframe[colno2]!='-']
     indexval=len(dataframe[(dataframe[colno1]==key1) & (dataframe[colno2]==key2)])

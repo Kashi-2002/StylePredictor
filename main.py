@@ -61,7 +61,7 @@ def main(argv):
         
     uniqueattr=list(zip(uniquekey,uniqueval))
 
-    print(len(uniqueattr))
+    # print(len(uniqueattr))
     # print(uniqueattr)
 
     single_attr=[]
@@ -329,15 +329,6 @@ def main(argv):
 
 
         elif((FLAGS.applicationofvariance==False) & (FLAGS.applicationofcross!=False)):
-            # print('yo')
-            # for i in range(len(cross_attr__1)):
-            #     # print('yo')
-            #     if(crosspossible(FLAGS.stylename,cross_attr__1[i][0],cross_attr__2[i][0],cross_attr__1[i][1],cross_attr__2[i][1],dataframe,FLAGS.frequencythreshold,FLAGS.positiveprobability,FLAGS.negativeprobability)!=None):
-            #         cross_after_filter1,cross_after_filter2=crosspossible(FLAGS.stylename,cross_attr__1[i][0],cross_attr__2[i][0],cross_attr__1[i][1],cross_attr__2[i][1],dataframe,FLAGS.frequencythreshold,FLAGS.positiveprobability,FLAGS.negativeprobability)
-            #         # print(cross_after_filter2)
-            #         cross_after_change1.append(cross_after_filter1[0])
-            #         cross_after_change2.append(cross_after_filter2[0]) 
-
             for i in range(len(uniqueattr)):
                 for j in range(i+1,len(uniqueattr)):
                     if((uniqueattr[i][1]=='-' )| (uniqueattr[j][1]=='-')):
@@ -397,56 +388,7 @@ def main(argv):
             clf=classifier(X,y)
             pred,predprobs=predictions(test,clf)
 
-            print(compute_eval_metrics(testlabel,predprobs))
-
-    # single_feature=[]
-    # cross_feature_1=[]
-    # cross_feature_2=[]
-
-
-
-    # if(FLAGS.applicationofvariance!=False & FLAGS.applicationofcross!=False):
-    #             # single_feature=[]
-    #             double_feat_1=[]
-    #             double_feat_2=[]
-    #             for i in range(len(uniqueattr)):
-    #                 if(uniqueattr[i][1]=='-'):
-    #                     continue
-    #             else:
-    #                 if(len(dataframe[(dataframe[uniqueattr[i][0]]==uniqueattr[i][1])])>FLAGS.frequencythreshold):
-    #                     if(checkifpossible(listofstyle,uniqueattr[i][1],uniqueattr[i][0],dataframe,FLAGS.stylename)!=None):
-    #                         single_feature.append(checkifpossible(listofstyle,uniqueattr[i][1],uniqueattr[i][0],dataframe,FLAGS.stylename))
-                            
-                            
-    #             for i in range(len(uniqueattr)):
-    #                 for j in range(i,len(uniqueattr)):
-    #                     if((uniqueattr[i][1]=='-') | (uniqueattr[j][1]=='-') ):
-    #                         continue
-    #                     else:
-    #                         if(uniqueattr[i][1]!=uniqueattr[j][1]):
-    #                             if(len(dataframe[(dataframe[uniqueattr[i][0]]==uniqueattr[i][1]) & (dataframe[uniqueattr[j][0]]==uniqueattr[j][1])])>FLAGS.frequencythreshold):
-    #                                 if(compute_var_double_ispossible(listofstyle,uniqueattr[i][1],uniqueattr[j][1],uniqueattr[i][0],uniqueattr[j][0],dataframe,FLAGS.stylename)!=None):
-    #                                     kross,kross1=compute_var_double_ispossible(listofstyle,uniqueattr[i][1],uniqueattr[j][1],uniqueattr[i][0],uniqueattr[j][0],dataframe,FLAGS.stylename)
-    #                                     double_feat_1.append(kross)
-    #                                     double_feat_2.append(kross1)
-
-    #             for i in range(len(double_feat_1)):
-    #                 for j in range(i,len(double_feat_1)):
-    #                     if((single_feature[i][1]=='-') | (single_feature[j][1]=='-') ):
-    #                         continue
-    #                     else:
-    #                         if(uniqueattr[i][1]!=single_feature[j][1]):
-    #                             if((len(dataframe[dataframe[uniqueattr[i][0]]==uniqueattr[i][1]])!=0) & (len(dataframe[dataframe[uniqueattr[j][0]]==uniqueattr[j][1]])!=0)):
-    #                                 if(len(dataframe[(dataframe[uniqueattr[i][0]]==uniqueattr[i][1]) & (dataframe[uniqueattr[j][0]]==uniqueattr[j][1])])>1):
-    #                                     if(crosspossible(FLAGS.stylename,uniqueattr[i][1],uniqueattr[j][1],uniqueattr[i][0],uniqueattr[j][0],dataframe,FLAGS.frequencythreshold,FLAGS.positiveprobability,FLAGS.negativeprobability)!=None):
-    #                                         cross_after_filter1,cross_after_filter2=crosspossible(FLAGS.stylename,uniqueattr[i][1],uniqueattr[j][1],uniqueattr[i][0],uniqueattr[j][0],dataframe,FLAGS.frequencythreshold,FLAGS.positiveprobability,FLAGS.negativeprobability)
-    #                                         cross_after_change1.append(cross_after_filter1)
-    #                                         cross_after_change2.append(cross_after_filter2)
-
-
-
-                
-                                      
+            print(compute_eval_metrics(testlabel,predprobs))                                    
 
 
 if __name__ == "__main__":
